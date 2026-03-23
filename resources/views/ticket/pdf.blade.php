@@ -307,7 +307,7 @@
 
                 @if($ticket)
                 @if(!empty($ticket->qr_svg))
-                <div style="width:130px; height:130px; margin: 0 auto 8px;">{!! $ticket->qr_svg !!}</div>
+                <img class="qr-img" src="{{ $ticket->qr_svg }}" alt="QR">
                 @endif
                 <div class="ticket-code">{{ $ticket->code }}</div>
                 <div class="scan-hint">Scan QR di pintu masuk</div>

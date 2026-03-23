@@ -127,7 +127,7 @@ class OrderController extends Controller
             $qrCode = new QrCodeGenerator(data: $ticket->code, size: 300, margin: 0);
             $writer = new SvgWriter();
             $result = $writer->write($qrCode);
-            $ticket->qr_svg = $result->getString();
+            $ticket->qr_svg = 'data:image/svg+xml;base64,' . base64_encode($result->getString());
         }
 
         $pdf = Pdf::loadView('ticket.pdf', compact('order', 'ticket'))
