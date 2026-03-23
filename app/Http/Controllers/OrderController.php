@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Ticket;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\SvgWriter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -124,9 +124,12 @@ class OrderController extends Controller
         $ticket = $order->ticket;
 
         if ($ticket) {
-            $qrCode = QrCode::create($ticket->code)->setSize(300)->setMargin(0);
-            $writer = new SvgWriter();
-            $result = $writer->write($qrCode);
+            $result = Builder::create()
+                ->writer(new SvgWriter())
+                ->data($ticket->code)
+                ->size(300)
+                ->margin(0)
+                ->build();
             $ticket->qr_svg = $result->getString();
         }
 
