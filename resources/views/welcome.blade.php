@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" style="overflow-x:hidden;max-width:100vw;">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -61,10 +61,16 @@
             overflow: hidden;
             transition: max-height 0.4s cubic-bezier(.4,0,.2,1), opacity 0.3s ease;
             opacity: 0;
+            width: 100%;
         }
         #mobile-menu.open {
             max-height: 400px;
             opacity: 1;
+        }
+        #navbar {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
         }
         /* Hamburger bars */
         .bar { display:block; width:20px; height:2px; background:white; border-radius:2px; transition: all 0.3s cubic-bezier(.4,0,.2,1); }
@@ -96,7 +102,7 @@
         .nav-link:hover::after, .nav-link.active::after { width: 100%; }
     </style>
 </head>
-<body class="bg-white text-gray-900 overflow-x-hidden">
+<body class="bg-white text-gray-900 overflow-x-hidden" style="max-width:100vw;">
 
 <!-- ═══════════════════════════════════════════
      NAVBAR
