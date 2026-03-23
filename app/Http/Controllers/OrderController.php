@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class OrderController extends Controller
 {
@@ -121,12 +122,9 @@ class OrderController extends Controller
         $order->load('ticket');
         $ticket = $order->ticket;
 
-        // Embed QR as base64 so dompdf can render it without external HTTP
         if ($ticket) {
-            $qrData = @file_get_contents($ticket->qr_code);
-            $ticket->qr_base64 = $qrData
-                ? 'data:image/png;base64,' . base64_encode($qrData)
-                : $ticket->qr_code;
+            $qrSvg = QrCode::format('png')->size(300)->generate($ticket->code);
+            $ticket->qr_base64 = 'data:image/png;base64,' . base64_encode($qrSvg);
         }
 
         $pdf = Pdf::loadView('ticket.pdf', compact('order', 'ticket'))
@@ -138,8 +136,6 @@ class OrderController extends Controller
             ->setOption('isHtml5ParserEnabled', true)
             ->setOption('isRemoteEnabled', false);
 
-        $filename = 'tiket-' . $order->order_number . '.pdf';
-
-        return $pdf->download($filename);
+        return $pdf->download('tiket-' . $order->order_number . '.pdf');
     }
 }
