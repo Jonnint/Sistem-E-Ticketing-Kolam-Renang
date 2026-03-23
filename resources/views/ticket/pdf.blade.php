@@ -306,7 +306,7 @@
                 <div class="section-label">Tiket Masuk</div>
 
                 @if($ticket)
-                <img class="qr-img" src="{{ $ticket->qr_base64 ?? $ticket->qr_code }}" alt="QR">
+                <img class="qr-img" src="{{ $ticket->qr_base64 ?? $ticket->qr_url ?? $ticket->qr_code }}" alt="QR">
                 <div class="ticket-code">{{ $ticket->code }}</div>
                 <div class="scan-hint">Scan QR di pintu masuk</div>
                 <span class="status-pill {{ $ticket->status === 'used' ? 'pill-used' : 'pill-unused' }}">
