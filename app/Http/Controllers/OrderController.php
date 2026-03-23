@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Ticket;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\SvgWriter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -122,9 +124,10 @@ class OrderController extends Controller
         $ticket = $order->ticket;
 
         if ($ticket) {
-            // Use QR server API with base64 embed
-            $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($ticket->code);
-            $ticket->qr_url = $qrUrl;
+            $qrCode = QrCode::create($ticket->code)->setSize(300)->setMargin(0);
+            $writer = new SvgWriter();
+            $result = $writer->write($qrCode);
+            $ticket->qr_svg = $result->getString();
         }
 
         $pdf = Pdf::loadView('ticket.pdf', compact('order', 'ticket'))
@@ -134,7 +137,7 @@ class OrderController extends Controller
             ->setOption('margin_left', 0)
             ->setOption('margin_right', 0)
             ->setOption('isHtml5ParserEnabled', true)
-            ->setOption('isRemoteEnabled', true);
+            ->setOption('isRemoteEnabled', false);
 
         return $pdf->download('tiket-' . $order->order_number . '.pdf');
     }

@@ -306,8 +306,11 @@
                 <div class="section-label">Tiket Masuk</div>
 
                 @if($ticket)
-                <div class="ticket-code" style="font-size:13px; margin-top:20px; word-break:break-all;">{{ $ticket->code }}</div>
-                <div class="scan-hint">Tunjukkan kode ini di pintu masuk</div>
+                @if(!empty($ticket->qr_svg))
+                <div style="width:130px; height:130px; margin: 0 auto 8px;">{!! $ticket->qr_svg !!}</div>
+                @endif
+                <div class="ticket-code">{{ $ticket->code }}</div>
+                <div class="scan-hint">Scan QR di pintu masuk</div>
                 <span class="status-pill {{ $ticket->status === 'used' ? 'pill-used' : 'pill-unused' }}">
                     {{ $ticket->status === 'used' ? 'Sudah Digunakan' : 'Belum Digunakan' }}
                 </span>
