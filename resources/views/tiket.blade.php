@@ -482,6 +482,17 @@
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('tgl').min = today;
 
+    // Pre-fill from query params (dari quick booking homepage)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tgl')) {
+        document.getElementById('tgl').value = urlParams.get('tgl');
+        document.getElementById('tgl').dispatchEvent(new Event('change'));
+    }
+    if (urlParams.get('sesi')) {
+        document.getElementById('sesi').value = urlParams.get('sesi');
+        updateSidebar();
+    }
+
     // ── Step navigation ────────────────────────────
     function goStep(n) {
         // Validate step 1
@@ -596,7 +607,7 @@
             'qty_adult':      state.dewasa,
             'qty_child':      state.anak,
             'name':           nama,
-            'phone':          wa,
+            'phone':          wa.replace(/^0+/, ''), // strip leading 0
             'email':          email,
             'notes':          catatan,
             'payment_method': selectedPayment,

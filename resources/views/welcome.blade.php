@@ -266,20 +266,20 @@
                         </div>
                         <div>
                             <label class="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wider">Sesi</label>
-                            <select class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-sky-400 bg-gray-50 pr-8 transition">
+                            <select id="sesi-input" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-sky-400 bg-gray-50 pr-8 transition">
                                 <option value="">Pilih Sesi</option>
-                                <option>Sesi 1 — 08.00 – 11.00 WIB</option>
-                                <option>Sesi 2 — 11.00 – 14.00 WIB</option>
-                                <option>Sesi 3 — 14.00 – 17.00 WIB</option>
+                                <option value="1">Sesi 1 — 08.00 – 11.00 WIB</option>
+                                <option value="2">Sesi 2 — 11.00 – 14.00 WIB</option>
+                                <option value="3">Sesi 3 — 14.00 – 17.00 WIB</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-[11px] font-semibold text-gray-500 mb-1.5 uppercase tracking-wider">Jumlah Tiket</label>
                             <div class="flex items-center gap-3">
-                                <button onclick="changeQty(-1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-sky-100 text-gray-700 font-bold text-xl transition-colors flex items-center justify-center select-none">−</button>
+                                <button type="button" onclick="changeQty(-1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-sky-100 text-gray-700 font-bold text-xl transition-colors flex items-center justify-center select-none">−</button>
                                 <span id="qty" class="font-heading font-bold text-xl text-gray-900 w-8 text-center">1</span>
-                                <button onclick="changeQty(1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-sky-100 text-gray-700 font-bold text-xl transition-colors flex items-center justify-center select-none">+</button>
-                                <span class="text-gray-400 text-sm ml-auto">× Rp 25.000</span>
+                                <button type="button" onclick="changeQty(1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-sky-100 text-gray-700 font-bold text-xl transition-colors flex items-center justify-center select-none">+</button>
+                                <span id="price-label" class="text-gray-400 text-sm ml-auto">× Rp 25.000</span>
                             </div>
                         </div>
                         <div class="border-t border-gray-100 pt-4 flex items-center justify-between">
@@ -287,8 +287,8 @@
                                 <div class="text-xs text-gray-400">Total Pembayaran</div>
                                 <div id="total" class="font-heading font-bold text-xl text-sky-600">Rp 25.000</div>
                             </div>
-                            <button class="btn-primary text-white font-heading font-bold px-6 py-3 rounded-xl text-sm shadow-lg">
-                                Cari Tiket →
+                            <button type="button" onclick="goToTicket()" class="btn-primary text-white font-heading font-bold px-6 py-3 rounded-xl text-sm shadow-lg">
+                                Pesan Tiket →
                             </button>
                         </div>
                     </div>
@@ -739,14 +739,42 @@
         });
     });
 
-    // ── Qty counter ────────────────────────────────────────────
+    // ── Qty counter & quick booking ───────────────────────────
     let qty = 1;
-    const price = 25000;
+    const prices = { weekday: 25000, weekend: 35000 };
+
+    function getHeroPrice() {
+        const tgl = document.getElementById('tgl-input').value;
+        if (!tgl) return prices.weekday;
+        const day = new Date(tgl + 'T00:00:00').getDay();
+        return (day === 0 || day === 6) ? prices.weekend : prices.weekday;
+    }
+
+    function updateHeroTotal() {
+        const p = getHeroPrice();
+        const label = p === prices.weekend ? 'Rp 35.000' : 'Rp 25.000';
+        document.getElementById('price-label').textContent = '× ' + label;
+        document.getElementById('total').textContent = 'Rp ' + (qty * p).toLocaleString('id-ID');
+    }
+
     function changeQty(d) {
         qty = Math.max(1, Math.min(50, qty + d));
         document.getElementById('qty').textContent = qty;
-        document.getElementById('total').textContent = 'Rp ' + (qty * price).toLocaleString('id-ID');
+        updateHeroTotal();
     }
+
+    function goToTicket() {
+        const tgl  = document.getElementById('tgl-input').value;
+        const sesi = document.getElementById('sesi-input').value;
+        let url = '/tiket';
+        const params = new URLSearchParams();
+        if (tgl)  params.set('tgl', tgl);
+        if (sesi) params.set('sesi', sesi);
+        if (params.toString()) url += '?' + params.toString();
+        window.location.href = url;
+    }
+
+    document.getElementById('tgl-input').addEventListener('change', updateHeroTotal);
 
     // Set min date to today
     const today = new Date().toISOString().split('T')[0];

@@ -275,6 +275,7 @@
                 <div class="px-6 pb-5">
                     <div class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs text-amber-700">
                         💵 Bayar di kasir saat tiba di lokasi. Tunjukkan nomor pesanan <span class="font-bold">{{ $order->order_number }}</span> kepada petugas.
+                        <span class="block mt-1 text-amber-600">Pesanan dibuat {{ $order->created_at->diffForHumans() }} — harap datang sesuai tanggal kunjungan.</span>
                     </div>
                 </div>
                 @endif
