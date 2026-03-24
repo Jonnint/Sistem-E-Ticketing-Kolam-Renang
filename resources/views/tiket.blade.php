@@ -382,6 +382,15 @@
     </div>
 </section>
 
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-gray-950/70 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl px-10 py-8 flex flex-col items-center gap-4 shadow-2xl">
+        <div class="w-14 h-14 rounded-full border-4 border-sky-100 border-t-sky-500 animate-spin"></div>
+        <div class="font-heading font-bold text-gray-900 text-base">Memproses Pesanan...</div>
+        <p class="text-gray-400 text-xs text-center">Mohon tunggu, jangan tutup halaman ini.</p>
+    </div>
+</div>
+
 <!-- FOOTER -->
 <footer class="bg-gray-950 text-white py-10 mt-8">
     <div class="max-w-7xl mx-auto px-5 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -593,6 +602,10 @@
         const wa    = document.getElementById('wa').value.trim();
         const email = document.getElementById('email').value.trim();
         const catatan = document.getElementById('catatan').value.trim();
+
+        // Tampilkan loading
+        document.getElementById('loading-overlay').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
 
         // Build and submit a real form to the backend
         const form = document.createElement('form');
