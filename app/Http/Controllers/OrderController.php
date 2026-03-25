@@ -194,11 +194,16 @@ class OrderController extends Controller
      */
     public function paymentFinish(Request $request)
     {
-        $orderId = $request->query('order_id');
+        $orderId           = $request->query('order_id');
+        $transactionStatus = $request->query('transaction_status');
 
         if ($orderId) {
             $order = Order::where('order_number', $orderId)->first();
-            if ($order && $order->status === 'paid') {
+            if ($order && $order->user_id === Auth::id()) {
+                // Jika settlement/capture tapi webhook belum jalan
+                if (in_array($transactionStatus, ['settlement', 'capture']) && $order->status !== 'paid') {
+                    $this->markAsPaid($order);
+                }
                 return redirect()->route('pesanan')->with('paid', $orderId);
             }
         }
@@ -212,6 +217,12 @@ class OrderController extends Controller
     public function paymentSuccess(Order $order)
     {
         abort_if($order->user_id !== Auth::id(), 403);
+
+        // Jika webhook belum sempat jalan, coba mark as paid di sini juga
+        if ($order->status === 'pending_payment') {
+            $this->markAsPaid($order);
+        }
+
         return redirect()->route('pesanan')->with('paid', $order->order_number);
     }
 
@@ -265,7 +276,7 @@ class OrderController extends Controller
                     ],
                 ],
                 'callbacks' => [
-                    'finish' => route('payment.success', $order),
+                    'finish' => route('payment.finish'),
                 ],
             ];
 

@@ -530,7 +530,9 @@
 
     function openSnap(token, orderId) {
         window.snap.pay(token, {
-            onSuccess: function() { window.location.href = `/payment/${orderId}/success`; },
+            onSuccess: function(result) {
+                window.location.href = `/payment/finish?order_id=${result.order_id}&transaction_status=${result.transaction_status}`;
+            },
             onPending: function() { window.location.reload(); },
             onError:   function() { alert('Pembayaran gagal. Silakan coba lagi.'); },
             onClose:   function() { window.location.reload(); },
@@ -545,6 +547,36 @@
 @else
 <script src="https://app.sandbox.midtrans.com/snap/snap.js"
         data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+@endif
+
+{{-- Popup Pembayaran Berhasil --}}
+@if(session('paid') || session('paid_pending'))
+<div id="paid-popup" class="fixed inset-0 z-[100] flex items-center justify-center px-4">
+    <div class="absolute inset-0 bg-gray-950/70 backdrop-blur-sm"></div>
+    <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 text-center animate-[fadeInUp_0.4s_ease]">
+        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+            <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+        <h2 class="font-heading font-extrabold text-2xl text-gray-900 mb-2">Pembayaran Berhasil!</h2>
+        @if(session('paid'))
+        <p class="text-gray-500 text-sm mb-1">Nomor pesanan</p>
+        <p class="font-heading font-bold text-sky-600 text-lg mb-4">{{ session('paid') }}</p>
+        @endif
+        <p class="text-gray-500 text-sm mb-6">Tiket kamu sudah siap. Tunjukkan QR code di pintu masuk.</p>
+        <button onclick="document.getElementById('paid-popup').remove()"
+            class="w-full btn-primary text-white font-heading font-bold py-3.5 rounded-xl text-sm shadow-lg">
+            Lihat Tiket Saya
+        </button>
+    </div>
+</div>
+<style>
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+</style>
 @endif
 </body>
 </html>
