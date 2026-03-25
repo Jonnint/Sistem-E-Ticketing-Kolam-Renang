@@ -156,6 +156,20 @@
         </div>
         @endif
 
+        @if (session('paid_pending'))
+        <div class="bg-green-50 border border-green-200 rounded-2xl px-5 py-4 mb-6 flex items-center gap-3">
+            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-green-800 font-semibold text-sm">Pembayaran berhasil! Tiket sedang diproses.</p>
+                <p class="text-green-600 text-xs">Status akan diperbarui otomatis dalam beberapa saat.</p>
+            </div>
+        </div>
+        @endif
+
         @if (session('cancelled'))
         <div class="bg-red-50 border border-red-200 rounded-2xl px-5 py-4 mb-6 text-sm text-red-700">
             Pesanan berhasil dibatalkan.

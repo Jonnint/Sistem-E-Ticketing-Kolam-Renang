@@ -190,6 +190,23 @@ class OrderController extends Controller
     }
 
     /**
+     * Halaman finish dari Midtrans redirect (tanpa order ID)
+     */
+    public function paymentFinish(Request $request)
+    {
+        $orderId = $request->query('order_id');
+
+        if ($orderId) {
+            $order = Order::where('order_number', $orderId)->first();
+            if ($order && $order->status === 'paid') {
+                return redirect()->route('pesanan')->with('paid', $orderId);
+            }
+        }
+
+        return redirect()->route('pesanan')->with('paid_pending', true);
+    }
+
+    /**
      * Halaman sukses setelah bayar (redirect dari Midtrans)
      */
     public function paymentSuccess(Order $order)

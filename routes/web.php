@@ -16,6 +16,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/pesanan/{order}/cancel', [OrderController::class, 'cancel']);
     Route::get('/payment/{order}/snap-token', [OrderController::class, 'getSnapToken'])->name('payment.snap-token');
     Route::get('/payment/{order}/success', [OrderController::class, 'paymentSuccess'])->name('payment.success');
+    Route::get('/payment/finish', [OrderController::class, 'paymentFinish'])->name('payment.finish');
     Route::get('/ticket/{order}/download', [OrderController::class, 'downloadPdf'])->name('ticket.download');
 });
 
