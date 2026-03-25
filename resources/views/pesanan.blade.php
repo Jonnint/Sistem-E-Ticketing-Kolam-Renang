@@ -519,7 +519,7 @@
             onSuccess: function() { window.location.href = `/payment/${orderId}/success`; },
             onPending: function() { window.location.reload(); },
             onError:   function() { alert('Pembayaran gagal. Silakan coba lagi.'); },
-            onClose:   function() { /* user tutup popup */ },
+            onClose:   function() { window.location.reload(); },
         });
     }
 </script>
