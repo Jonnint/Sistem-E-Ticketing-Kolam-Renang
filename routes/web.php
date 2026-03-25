@@ -14,7 +14,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/pesanan', [OrderController::class, 'index'])->name('pesanan');
     Route::put('/pesanan/{order}', [OrderController::class, 'update']);
     Route::post('/pesanan/{order}/cancel', [OrderController::class, 'cancel']);
-    Route::post('/payment/{order}/pay', [OrderController::class, 'pay'])->name('payment.pay');
+    Route::get('/payment/{order}/snap-token', [OrderController::class, 'getSnapToken'])->name('payment.snap-token');
+    Route::get('/payment/{order}/success', [OrderController::class, 'paymentSuccess'])->name('payment.success');
     Route::get('/ticket/{order}/download', [OrderController::class, 'downloadPdf'])->name('ticket.download');
 });
 
@@ -36,5 +37,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/reports',                           [AdminController::class, 'reports'])->name('reports');
     Route::get('/reports/export',                    [AdminController::class, 'exportCsv'])->name('reports.export');
 });
+
+// Midtrans webhook — public, no auth, no CSRF
+Route::post('/payment/notification', [OrderController::class, 'notification'])->name('payment.notification');
 
 require __DIR__.'/auth.php';

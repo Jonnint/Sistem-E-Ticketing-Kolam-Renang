@@ -13,6 +13,7 @@ class Order extends Model
         'ticket_type', 'qty_adult', 'qty_child', 'price_per_ticket',
         'total_price', 'name', 'phone', 'email', 'notes',
         'status', 'payment_method',
+        'snap_token', 'payment_url', 'midtrans_transaction_id',
     ];
 
     protected $casts = [

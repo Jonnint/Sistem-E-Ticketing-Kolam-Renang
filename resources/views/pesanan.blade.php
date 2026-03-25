@@ -288,14 +288,11 @@
                     </div>
                     <div class="flex items-center gap-2">
                         @if ($order->status === 'pending_payment')
-                        <form method="POST" action="{{ route('payment.pay', $order) }}"
-                              onsubmit="return confirm('Konfirmasi pembayaran online untuk pesanan ini?')">
-                            @csrf
-                            <button type="submit"
-                                class="text-xs text-white bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 font-semibold px-4 py-1.5 rounded-lg transition shadow-sm">
-                                💳 Bayar Sekarang
-                            </button>
-                        </form>
+                        <button
+                            onclick="bayarSekarang({{ $order->id }}, '{{ $order->snap_token }}')"
+                            class="text-xs text-white bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 font-semibold px-4 py-1.5 rounded-lg transition shadow-sm">
+                            💳 Bayar Sekarang
+                        </button>
                         @endif
                         @if (in_array($order->status, ['pending_cash', 'pending_payment']))
                         <button onclick="openEdit({{ $order }})"
@@ -500,6 +497,40 @@
     document.querySelectorAll('.mobile-link').forEach(l => {
         l.addEventListener('click', () => { mobileMenu.classList.remove('open'); hamburger.classList.remove('open'); updateNavbar(); });
     });
+
+    // Midtrans Snap
+    function bayarSekarang(orderId, snapToken) {
+        if (snapToken) {
+            openSnap(snapToken, orderId);
+            return;
+        }
+        // Ambil token dulu jika belum ada
+        fetch(`/payment/${orderId}/snap-token`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.token) openSnap(data.token, orderId);
+                else alert('Gagal memuat pembayaran. Coba lagi.');
+            })
+            .catch(() => alert('Gagal memuat pembayaran. Coba lagi.'));
+    }
+
+    function openSnap(token, orderId) {
+        window.snap.pay(token, {
+            onSuccess: function() { window.location.href = `/payment/${orderId}/success`; },
+            onPending: function() { window.location.reload(); },
+            onError:   function() { alert('Pembayaran gagal. Silakan coba lagi.'); },
+            onClose:   function() { /* user tutup popup */ },
+        });
+    }
 </script>
+
+{{-- Midtrans Snap.js --}}
+@if(config('services.midtrans.is_production'))
+<script src="https://app.midtrans.com/snap/snap.js"
+        data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+@else
+<script src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+@endif
 </body>
 </html>
